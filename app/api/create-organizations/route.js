@@ -1,0 +1,43 @@
+import connectDB from "@/lib/mongodb";
+import Member from "@/models/Member";
+import Organization from "@/models/Organization";
+import { getAuth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+export async function POST(req) {
+  try {
+    await connectDB();
+
+    const { userId } = getAuth(req);
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+    const body = await req.json();
+    console.log("📩 Raw body received:", body);
+
+    const { orgName, orgEmail, username } = body;
+    if (!orgName || !orgEmail || !username) {
+      return new NextResponse("Please provide org name and email", { status: 400 });
+    }
+
+    const newOrg = await Organization.create({
+      name: orgName.trim(),
+      createdBy: userId,
+      OrgMail: orgEmail.toLowerCase().trim(),
+    });
+
+    console.log("✅ Saved organization:", newOrg);
+
+    await Member.create({
+      name: username,
+      userID: userId,
+      organizationId: newOrg._id,
+      email:orgEmail.toLowerCase().trim(),
+    });
+
+    return NextResponse.json(newOrg, { status: 201 });
+  } catch (error) {
+    console.error("❌ Error creating org:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
