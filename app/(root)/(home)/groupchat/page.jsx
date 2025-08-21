@@ -267,14 +267,13 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="w-full max-w-[1100px] mx-auto mt-10 mb-10 font-sans p-6 border border-gray-300 rounded-2xl shadow-xl bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* ✅ Org name printed */}
-      <h1 className="text-center text-gray-900 text-3xl md:text-4xl font-extrabold mb-6">
+    <div className="w-full max-w-[1300px] mx-auto mb-10 font-sans p-4 border border-gray-300 rounded-2xl shadow-xl bg-gradient-to-br from-gray-50 to-gray-100">
+     
+      <h1 className="text-center text-gray-900 text-2xl md:text-3xl font-extrabold mb-1">
         {orgName ? `💬 ${orgName} Chat` : "💬 Chat"}
       </h1>
 
-      {/* ✅ Reduced height */}
-      <div className="min-h-[350px] max-h-[450px] overflow-y-auto p-6 border border-gray-300 rounded-xl mb-5 bg-white shadow-inner">
+      <div className="min-h-[450px] max-h-[450px] overflow-y-auto p-6 border border-gray-300 rounded-xl mb-5 bg-white shadow-inner">
         {messages.length === 0 && (
           <p className="text-gray-500 text-center text-lg">
             No messages yet. Start the conversation!
