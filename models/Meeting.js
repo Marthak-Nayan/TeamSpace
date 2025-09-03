@@ -1,24 +1,32 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose from "mongoose";
 
-const meetingSchema = new Schema({
-  _id: { type: String, required: true }, // meet001
-  organizationId: {
-    type: Schema.Types.ObjectId,
-    ref: "Organization",
-    required: true
+const meetingSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    hostId: { type: String, required: true },
+    organizationId: { type: String, required: true }, // ✅ new field
+    creatorName: { type: String, required: true },
+    scheduledTime: { type: Date, default: null },
+    isStarted: { type: Boolean, default: false },
+    status: {
+      type: String,
+      enum: ["upcoming", "live", "ended"],
+      default: "upcoming",
+    },
+    endedAt: { type: Date, default: null },
+    participants: [
+      {
+        userId: { type: String, required: true },
+        name: { type: String },
+        role: { type: String, enum: ["host", "member"], default: "member" },
+        joinedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
-  name: { type: String, required: true },
-  reason: { type: String },
-  participants: [{
-    type: Schema.Types.ObjectId,
-    ref: "User"
-  }],
-  date: { type: String, required: true },
-  time: { type: String, required: true },
-  duration: { type: String },
-  schedule: { type: String, enum: ["One-time", "Recurring"], default: "One-time" },
-  status: { type: String, enum: ["Scheduled", "Completed", "Cancelled"], default: "Scheduled" }
-}, { _id: false });
+  { timestamps: true }
+);
 
-const Meeting = models.Meeting || model("Meeting", meetingSchema);
+const Meeting =mongoose.models.Meeting || mongoose.model("Meeting", meetingSchema);
+
 export default Meeting;

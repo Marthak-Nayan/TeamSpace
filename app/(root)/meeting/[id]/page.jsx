@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
+import { CallingState, StreamCall, StreamTheme, useCall, useCallStateHooks } from '@stream-io/video-react-sdk';
 import { useParams } from 'next/navigation';
 import { Loader } from 'lucide-react';
 
 import { useGetCallById } from '@/hooks/useGetCallById';
-import Alert from '@/components/Alert';
 import MeetingSetup from '@/components/MeetingSetup';
 import MeetingRoom from '@/components/MeetingRoom';
 
 const MeetingPage = () => {
   const params = useParams();
   const id = params.id;
+  console.log(id);
   const { isLoaded, user } = useUser();
   const { call, isCallLoading } = useGetCallById(id);
   const [isSetupComplete, setIsSetupComplete] = useState(false);
@@ -28,18 +28,10 @@ const MeetingPage = () => {
     );
   }
 
-  const notAllowed =
-    call.type === 'invited' &&
-    (!user || !call.state.members.find((m) => m.user.id === user.id));
-
-  if (notAllowed) {
-    return <Alert title="You are not allowed to join this meeting" />;
-  }
-
   return (
     <main className="h-screen w-full">
       <StreamCall call={call}>
-        <StreamTheme>
+        <StreamTheme as="main" className="my-custom-root-class" style={{ position: 'relative'}}>
           {!isSetupComplete ? (
             <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
           ) : (

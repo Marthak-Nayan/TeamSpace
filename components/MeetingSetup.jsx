@@ -1,82 +1,94 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   DeviceSettings,
-  VideoPreview,
   useCall,
-  useCallStateHooks,
-} from '@stream-io/video-react-sdk';
-
-import Alert from './Alert';
-import { Button } from './ui/button';
+  VideoPreview,
+  SpeakingWhileMutedNotification,
+  ToggleAudioPublishingButton,
+  ToggleVideoPublishingButton,
+} from "@stream-io/video-react-sdk";
+import React, { useEffect, useState } from "react";
+import { Button } from "./ui/button";
+import { useUser } from "@clerk/nextjs";
+import { useParams } from "next/navigation";
 
 const MeetingSetup = ({ setIsSetupComplete }) => {
-  const { useCallEndedAt, useCallStartsAt } = useCallStateHooks();
-  const callStartsAt = useCallStartsAt();
-  const callEndedAt = useCallEndedAt();
-  const callTimeNotArrived =
-  callStartsAt && new Date(callStartsAt) > new Date();
-  const callHasEnded = !!callEndedAt;
+  const [isMember, setIsMember] = useState(null);
+  const { user } = useUser();
+  const { id } = useParams();
 
   const call = useCall();
-
   if (!call) {
-    throw new Error(
-      'useStreamCall must be used within a StreamCall component.'
+    throw new Error("useCall must be used within a StreamCall component");
+  }
+
+  useEffect(() => {
+    const checkMembership = async () => {
+      try {
+        const res = await fetch("/api/organizations/check-member", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user?.id, meetingid: id }),
+        });
+        const data = await res.json();
+        setIsMember(data.isMember);
+      } catch (err) {
+        console.error("Membership check failed:", err);
+        setIsMember(false);
+      }
+    };
+
+    if (user?.id && id) checkMembership();
+  }, [user, id]);
+
+  if (isMember === null) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-gray-900 text-white">
+        <p className="text-lg font-semibold">Checking access…</p>
+      </div>
     );
   }
 
-  const [isMicCamToggled, setIsMicCamToggled] = useState(false);
-
-  useEffect(() => {
-    if (isMicCamToggled) {
-      call.camera.disable();
-      call.microphone.disable();
-    } else {
-      call.camera.enable();
-      call.microphone.enable();
-    }
-  }, [isMicCamToggled, call.camera, call.microphone]);
-
-  if (callTimeNotArrived)
+  if (!isMember) {
     return (
-      <Alert
-        title={`Your Meeting has not started yet. It is scheduled for ${callStartsAt.toLocaleString()}`}
-      />
+      <div className="flex h-screen w-full items-center justify-center bg-gray-900 text-white">
+        <h1 className="text-xl font-bold">
+          You are not authorized to join this meeting.
+        </h1>
+      </div>
     );
-
-  if (callHasEnded)
-    return (
-      <Alert
-        title="The call has been ended by the host"
-        iconUrl="/icons/call-ended.svg"
-      />
-    );
+  }
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-3 text-white">
-      <h1 className="text-center text-2xl font-bold">Setup</h1>
+    <div className="flex h-screen w-full flex-col items-center justify-center gap-6 bg-gray-900 text-white px-4">
+      <h1 className="text-2xl font-bold">Setup your meeting</h1>
+
+      {/* Video Preview */}
       <VideoPreview />
-      <div className="flex h-16 items-center justify-center gap-3">
-        <label className="flex items-center justify-center gap-2 font-medium">
-          <input
-            type="checkbox"
-            checked={isMicCamToggled}
-            onChange={(e) => setIsMicCamToggled(e.target.checked)}
-          />
-          Join with mic and camera off
-        </label>
+
+      {/* Built-in Audio/Video Controls */}
+      <div className="flex items-center justify-center gap-4 mt-4">
+        <SpeakingWhileMutedNotification>
+          <ToggleAudioPublishingButton />
+        </SpeakingWhileMutedNotification>
+        <ToggleVideoPublishingButton />
         <DeviceSettings />
       </div>
+
+      {/* Device Settings */}
+      
+
+
+      {/* Join button */}
       <Button
-        className="rounded-md bg-green-500 px-4 py-2.5"
+        className="mt-4 rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold hover:bg-blue-700"
         onClick={() => {
-          call.join();
+          call.join({ create: false });
           setIsSetupComplete(true);
         }}
       >
-        Join meeting
+        Join Meeting
       </Button>
     </div>
   );

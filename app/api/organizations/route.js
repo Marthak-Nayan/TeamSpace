@@ -18,11 +18,11 @@ export async function GET(req) {
 
     // 1. Organizations created by user
     const createdOrgs = await Organization.find({ createdBy: userId });
-    console.log(createdOrgs);
+    //console.log(createdOrgs);
 
     // 2. Memberships where user is a member
     const memberships = await Member.find({ userID:userId });
-    console.log(memberships);
+    //console.log(memberships);
     // 3. Extract organizationIds from memberships
     const orgIdsFromMemberships = memberships.map((m) => m.organizationId);
 

@@ -8,8 +8,7 @@ import CreateOrganization from "./CreateOrganization";
 
 const SelectOrganization = () => {
   const { getToken } = useAuth(); 
-  const { selectedOrg, setSelectedOrg } = useOrganizationClient();
-  const [ organizations, setOrganizations] = useState([]);
+  const { selectedOrg, setSelectedOrg,organizations,setOrganizations } = useOrganizationClient();
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {

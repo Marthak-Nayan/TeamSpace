@@ -243,3 +243,9 @@
     width: 100%;
   }
 }
+
+.str-video__participant-tile {
+  width: 250px !important;
+  height: 180px !important;
+}
+

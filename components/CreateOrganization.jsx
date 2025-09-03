@@ -12,6 +12,7 @@ const CreateOrganization = ({ open, setOpen, setOrganizations, setSelectedOrg, o
   //const [orgEmail,setOrgEmail] = useState("");
   const [newOrgName, setNewOrgName] = useState("");
   const [emailInput, setEmailInput] = useState("");
+  const [description,setDescription] = useState("");
   const {user,isLoaded} = useUser()
 
 
@@ -21,6 +22,7 @@ const CreateOrganization = ({ open, setOpen, setOrganizations, setSelectedOrg, o
       setStep(1);
       setNewOrgName("");
       setEmailInput("");
+      setDescription("");
     }
   }, [open]);
 
@@ -41,6 +43,7 @@ const CreateOrganization = ({ open, setOpen, setOrganizations, setSelectedOrg, o
         body: JSON.stringify({
           orgName: newOrgName,
           orgEmail :user.primaryEmailAddress?.emailAddress, // must be defined, not undefined,
+          description,
           username,
         }),
       });
@@ -85,14 +88,14 @@ const CreateOrganization = ({ open, setOpen, setOrganizations, setSelectedOrg, o
               onChange={(e) => setNewOrgName(e.target.value)}
               required
             />
-            {/*<Input
+            <Input
               className="bg-gray-800 text-white border-gray-600 mt-3"
-              placeholder="Enter Your Email"
-              value={orgEmail}
-              onChange={(e) => setOrgEmail(e.target.value)}
+              placeholder="Enter Your Organization description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               required
-              type="email"
-            />*/}
+              type="text"
+            />
             <div className="flex justify-end mt-4">
               <Button onClick={() => setStep(2)}
                 disabled={!newOrgName.trim()} >Next</Button>{ /*|| !orgEmail.trim()} >Next</Button>*/}

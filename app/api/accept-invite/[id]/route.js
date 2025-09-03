@@ -34,8 +34,7 @@ export async function POST(req, { params }) {
 
     // Add user as member to the organization
     // You may want to check if user is already a member
-    const existingMember = await Member.findOne({ orgId: invitation.orgId, userId });
-
+    const existingMember = await Member.findOne({ organizationId: invitation.orgId, userID:userId });
     if (!existingMember) {
       const newMember = new Member({
         organizationId: invitation.orgId,

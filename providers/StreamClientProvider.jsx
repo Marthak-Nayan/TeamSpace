@@ -6,12 +6,16 @@ import { useUser } from '@clerk/nextjs';
 
 import { tokenProvider } from '@/actions/stream.action';
 import Loader from '@/components/Loader';
+import { useOrganizationClient } from '@/context/OrganizationContext';
 
 const API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
 const StreamVideoProvider = ({ children }) => {
   const [videoClient, setVideoClient] = useState(null);
   const { user, isLoaded } = useUser();
+  const {selectedOrg} = useOrganizationClient();
+
+  
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -20,9 +24,9 @@ const StreamVideoProvider = ({ children }) => {
     const client = new StreamVideoClient({
       apiKey: API_KEY,
       user: {
-        id: user.id,
-        name: user.username || user.id,
-        image: user.imageUrl,
+        id: user?.id,
+        name: `${user.firstName || ''} ${user.lastName || ''}`,
+        image: user?.imageUrl,
       },
       tokenProvider,
     });

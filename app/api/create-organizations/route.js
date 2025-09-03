@@ -15,7 +15,7 @@ export async function POST(req) {
     const body = await req.json();
     console.log("📩 Raw body received:", body);
 
-    const { orgName, orgEmail, username } = body;
+    const { orgName, orgEmail, username,description } = body;
     if (!orgName || !orgEmail || !username) {
       return new NextResponse("Please provide org name and email", { status: 400 });
     }
@@ -24,6 +24,7 @@ export async function POST(req) {
       name: orgName.trim(),
       createdBy: userId,
       OrgMail: orgEmail.toLowerCase().trim(),
+      description,
     });
 
     console.log("✅ Saved organization:", newOrg);
@@ -33,7 +34,9 @@ export async function POST(req) {
       userID: userId,
       organizationId: newOrg._id,
       email:orgEmail.toLowerCase().trim(),
+      role:"host",
     });
+    console.log("Member are join in Organization");
 
     return NextResponse.json(newOrg, { status: 201 });
   } catch (error) {

@@ -4,12 +4,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import MobileNav from './MobileNav'
-import { useRouter } from 'next/navigation'
 import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from '@clerk/nextjs'
 import SelectOrganization from './SelectOrganization';
+import { useOrganizationClient } from '@/context/OrganizationContext';
 
 const Navbar = () => {
-  const router = useRouter();
+  const { selectedOrg } = useOrganizationClient();
+  console.log(selectedOrg);
+
   return (
     <nav className="flex items-center justify-between fixed z-50 w-full bg-[#222733] px-6 py-4 lg:px-10">
       {/* Left side: Logo + Title + Select */}

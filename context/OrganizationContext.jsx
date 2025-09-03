@@ -4,41 +4,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 const OrganizationContext = createContext();
 
 export const OrganizationProvider = ({ children }) => {
-  const [selectedOrg, setSelectedOrgState] = useState(null);
+  const [selectedOrg, setSelectedOrg] = useState(null);  
+  const [organizations, setOrganizations] = useState([]);
 
-  // Set and persist to localStorage
-  const setSelectedOrg = (org) => {
-    setSelectedOrgState(org);
-    if (org) {
-      const currentStored = localStorage.getItem("selectedOrg");
-      const newValue = JSON.stringify(org);
-
-      // Only update if value has changed
-
-      if (currentStored !== newValue) {
-        localStorage.setItem("selectedOrg", newValue);
-        setSelectedOrgState(org);
-        window.location.reload();
-      }
-    } else {
-      localStorage.removeItem("selectedOrg");
-    }
-  };
-
-  // Restore from localStorage on first load
-  useEffect(() => {
-    const storedOrg = localStorage.getItem("selectedOrg");
-    if (storedOrg) {
-      try {
-        setSelectedOrgState(JSON.parse(storedOrg));
-      } catch (err) {
-        console.error("Invalid selectedOrg in localStorage");
-      }
-    }
-  }, []);
 
   return (
-    <OrganizationContext.Provider value={{ selectedOrg, setSelectedOrg }}>
+    <OrganizationContext.Provider value={{ selectedOrg, setSelectedOrg,organizations, setOrganizations }}>
       {children}
     </OrganizationContext.Provider>
   );

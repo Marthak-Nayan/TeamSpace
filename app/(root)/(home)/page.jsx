@@ -1,7 +1,6 @@
 'use client';
 import MeetingTypeList from '@/components/MeetingTypeList';
 import React from 'react'
-import { useOrganizationClient } from '@/context/OrganizationContext';
 import CurrentTime from '@/components/CurrentTime';
 
 const home = () => {
@@ -13,10 +12,6 @@ const home = () => {
     month: 'long',
     day: 'numeric',
   });
-
-  const { selectedOrg } = useOrganizationClient();
-
-  console.log(selectedOrg?._id);
 
   return (
     <section className="w-full px-2 py-2 text-white">

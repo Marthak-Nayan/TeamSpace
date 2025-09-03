@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import HomeCard from './HomeCard';
@@ -12,6 +12,7 @@ import ReactDatePicker from 'react-datepicker';
 import { toast } from 'sonner'; // ✅ Correct usage
 import { Input } from './ui/input';
 import MeetingModal from './MeetingModel';
+import { useOrganizationClient } from '@/context/OrganizationContext';
 
 const initialValues = {
   dateTime: new Date(),
@@ -27,27 +28,22 @@ const MeetingTypeList = () => {
   const [callDetail, setCallDetail] = useState();
   const client = useStreamVideoClient();
   const { user } = useUser();
+  const [orgId, setOrgId] = useState();
+  const { selectedOrg } = useOrganizationClient();
 
-  //get information about Organization
-  const org = localStorage.getItem("selectedOrg");
-  let orgcreatedby="";
-  let orgid="";
-  try{
-    const parsed = JSON.parse(org);
-    orgcreatedby = parsed?.createdBy || org;
-    orgid = parsed?._id || org;
-  }catch(error){
-    orgcreatedby = org;
+  //set org id
+  useEffect(() => {
+  if (selectedOrg?._id) {
+    setOrgId(selectedOrg._id);
   }
+}, [selectedOrg]);
 
   //get information about user
   const userID = user?.id;
 
   //check is orgcreator is same as a user or not
-  const isOrgCreator = orgcreatedby === userID;
-  console.log(orgcreatedby,"  ",userID);
-  console.log(isOrgCreator);  
-
+  const isOrgCreator = selectedOrg?.createdBy === userID;
+  
   const createMeeting = async () => {
     if (!client || !user) return;
     try {
@@ -55,8 +51,7 @@ const MeetingTypeList = () => {
         toast('Please select a date and time');
         return;
       }
-//      const id = crypto.randomUUID();
-      const id = orgid
+      const id = orgId
       const call = client.call('default', id);
       if (!call) throw new Error('Failed to create meeting');
 
@@ -66,6 +61,7 @@ const MeetingTypeList = () => {
 
       await call.getOrCreate({
         data: {
+          start_By:userID,
           starts_at: startsAt,
           custom: {
             description,
@@ -110,73 +106,24 @@ const MeetingTypeList = () => {
         handleClick={() => setMeetingState('isJoiningMeeting')}
       />
       )}
-      {isOrgCreator && (
+      {//isOrgCreator && (
       <HomeCard
         img="/icons/schedule.svg"
         title="Schedule Meeting"
         description="Plan your meeting"
         className="bg-purple-500"
-        handleClick={() => setMeetingState('isScheduleMeeting')}
+        handleClick={() => router.push('/upcoming')}
       />
-      )}
+      //)
+      }
+      {/*
       <HomeCard
         img="/icons/recordings.svg"
         title="View Recordings"
         description="Meeting Recordings"
         className="bg-yellow-500"
         handleClick={() => router.push('/recordings')}
-      />
-
-      {!callDetail ? (
-        <MeetingModal
-          isOpen={meetingState === 'isScheduleMeeting'}
-          onClose={() => setMeetingState(undefined)}
-          title="Create Meeting"
-          handleClick={createMeeting}
-        >
-          <div className="flex flex-col gap-2.5">
-            <label className="text-base font-normal leading-[22.4px] text-sky-2">
-              Add a description
-            </label>
-            <Textarea
-              className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
-              onChange={(e) =>
-                setValues({ ...values, description: e.target.value })
-              }
-            />
-          </div>
-          <div className="flex w-full flex-col gap-2.5">
-            <label className="text-base font-normal leading-[22.4px] text-sky-2">
-              Select Date and Time
-            </label>
-            <ReactDatePicker
-              selected={values.dateTime}
-              onChange={(date) => setValues({ ...values, dateTime: date })}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              timeCaption="time"
-              dateFormat="MMMM d, yyyy h:mm aa"
-              className="w-full rounded bg-dark-3 p-2 focus:outline-none"
-            />
-          </div>
-        </MeetingModal>
-      ) : (
-        <MeetingModal
-          isOpen={meetingState === 'isScheduleMeeting'}
-          onClose={() => setMeetingState(undefined)}
-          title="Meeting Created"
-          handleClick={() => {
-            navigator.clipboard.writeText(meetingLink);
-            toast('Link Copied');
-          }}
-          image={'/icons/checked.svg'}
-          buttonIcon="/icons/copy.svg"
-          className="text-center"
-          buttonText="Copy Meeting Link"
-        />
-      )}
-
+      />*/}
       <MeetingModal
         isOpen={meetingState === 'isJoiningMeeting'}
         onClose={() => setMeetingState(undefined)}

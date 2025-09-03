@@ -13,6 +13,7 @@ export default function AcceptInvitePage() {
 
   useEffect(() => {
     if (!isLoaded) return;
+    //sentRef.current = true;
 
     // If not logged in → send to sign-in and return here
     if (!userId) {
@@ -44,7 +45,7 @@ export default function AcceptInvitePage() {
         router.push(`/`);
       } else {
         setStatus(`Failed: ${data.error || data.message || "Unknown error"}`);
-        setTimeout(() => router.push("/"), 2000);
+        setTimeout(() => router.push("/"), 20000);
       }
     };
 

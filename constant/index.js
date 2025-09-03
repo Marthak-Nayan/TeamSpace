@@ -15,11 +15,11 @@ export const sidebarLinks = [
     route: '/groupchat',
     label: 'Group Chat',
   },
-  {
+  /*{
     imgURL: '/icons/Video.svg',
     route: '/recordings',
     label: 'Recordings',
-  },
+  },*/
   {
     imgURL: '/icons/information.svg',
     route: '/roominfo',
