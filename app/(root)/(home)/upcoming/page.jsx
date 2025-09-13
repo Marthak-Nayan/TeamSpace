@@ -272,7 +272,7 @@ const MeetingSchedulePage = () => {
       });*/
       await call.getOrCreate({
         data: {
-          members: member.map(m => ({ user_id: m._id, role: m.role == "host" ? "host" : "user" })),
+          members: member.map(m => ({ user_id: m.userID, role: m.role == "host" ? "host" : "user" })),
         },
       });
 

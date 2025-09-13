@@ -4,19 +4,20 @@ import { getAuth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/mongodb";
 
 export async function POST(req, { params }) {
-  await connectDB();
-
   const { userId } = getAuth(req);
-
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const { id } = await params;
-  const body = await req.json();
-  const { endedAt, status } = body;
-
   try {
+    await connectDB();
+
+    
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { endedAt, status } = body;
+
+  
     const meeting = await Meeting.findById(id);
     if (!meeting) {
       return NextResponse.json({ error: "Meeting not found" }, { status: 404 });

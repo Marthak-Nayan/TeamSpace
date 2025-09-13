@@ -13,7 +13,6 @@ export async function DELETE(req, { params }) {
     await connectDB();
 
     const { id } = await params;
-    console.log(id);
     const { userId } = getAuth(req);
 
     if (!userId) {

@@ -13,8 +13,7 @@ export async function POST(req) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const body = await req.json();
-    console.log("📩 Raw body received:", body);
-
+    
     const { orgName, orgEmail, username,description } = body;
     if (!orgName || !orgEmail || !username) {
       return new NextResponse("Please provide org name and email", { status: 400 });
@@ -27,8 +26,7 @@ export async function POST(req) {
       description,
     });
 
-    console.log("✅ Saved organization:", newOrg);
-
+    
     await Member.create({
       name: username,
       userID: userId,

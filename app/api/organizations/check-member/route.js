@@ -26,8 +26,6 @@ export async function POST(req) {
     });
 
 
-    console.log("Found member:", member);
-
     return new Response(JSON.stringify({ isMember: !!member }), {
       status: 200,
       headers: { "Content-Type": "application/json" },

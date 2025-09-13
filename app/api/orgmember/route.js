@@ -12,14 +12,12 @@ export async function POST(req) {
     const { orgid} = await req.json();
     // TODO: Replace this with actual auth logic (Clerk, JWT, session, etc.)
     const { userId } = getAuth(req);
-    console.log(orgid);
     if(!userId){
       return new NextResponse('Unauthorized',{status:401});
     }
 
     const orgMembers = await Member.find({ organizationId: new mongoose.Types.ObjectId(orgid) });
-    //console.log(createdOrgs);
-
+    
     const orgdescription = await Organization.findById(orgid).select("description").lean();
     const description = orgdescription?.description;
 

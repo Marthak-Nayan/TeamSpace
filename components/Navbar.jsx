@@ -10,8 +10,7 @@ import { useOrganizationClient } from '@/context/OrganizationContext';
 
 const Navbar = () => {
   const { selectedOrg } = useOrganizationClient();
-  console.log(selectedOrg);
-
+  
   return (
     <nav className="flex items-center justify-between fixed z-50 w-full bg-[#222733] px-6 py-4 lg:px-10">
       {/* Left side: Logo + Title + Select */}

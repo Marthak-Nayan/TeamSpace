@@ -69,23 +69,23 @@ export const MeetingControls = ({ participantCount = 1, onChangeLayout }) => {
 
   const handleLeave = async () => {
     try {
-      const response = await call.queryMembers({
-        payload: { filter_conditions: { role: { $eq: "host" } } },
+      // const response = await call.queryMembers({
+      //   payload: { filter_conditions: { role: { $eq: "host" } } },
+      // });
+      // const admins = response.members || [];
+      // console.log("Admins in the call:", admins);
+      const result = await call.queryMembers({
+        filter_conditions: { role: { $eq: "host" } },
+        limit: 1,
       });
-      const admins = response.members || [];
-      console.log("Admins in the call:", admins);
+      const host = result.members[0];
+      console.log("Host of the call:", host.role);
+      // Determine if the current user is the host
       
-      
-      const userRole = localParticipant?.user?.role || 'user';
-      const isHost = userRole === 'host';
+      //const userRole = localParticipant?.role;
+      const isHost = host.role === "host";
 
-      console.log('Current user leaving:', {
-       userId: localParticipant?.userId,
-        role: userRole,
-        isHost: isHost
-      });
-
-       if (isHost) {
+      if (isHost) {
         const token = await getToken();
         await fetch(`/api/meetings/${id}/end`, {
           method: "POST",
