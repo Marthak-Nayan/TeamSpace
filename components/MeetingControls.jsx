@@ -55,9 +55,9 @@ export const MeetingControls = ({ participantCount = 1, onChangeLayout }) => {
 
   // Redirect if call ended
   useEffect(() => {
-    if (callingState === CallingState.LEFT) {
+  if (callingState === CallingState.LEFT) {
       router.push("/greetingpage");
-    }
+  }
   }, [callingState, router]);
 
   if (callingState === CallingState.JOINING) {
@@ -69,7 +69,23 @@ export const MeetingControls = ({ participantCount = 1, onChangeLayout }) => {
 
   const handleLeave = async () => {
     try {
-      if (localParticipant?.roles?.includes("host")) {
+      const response = await call.queryMembers({
+        payload: { filter_conditions: { role: { $eq: "host" } } },
+      });
+      const admins = response.members || [];
+      console.log("Admins in the call:", admins);
+      
+      
+      const userRole = localParticipant?.user?.role || 'user';
+      const isHost = userRole === 'host';
+
+      console.log('Current user leaving:', {
+       userId: localParticipant?.userId,
+        role: userRole,
+        isHost: isHost
+      });
+
+       if (isHost) {
         const token = await getToken();
         await fetch(`/api/meetings/${id}/end`, {
           method: "POST",
@@ -82,27 +98,27 @@ export const MeetingControls = ({ participantCount = 1, onChangeLayout }) => {
             status: "ended",
           }),
         });
+        call.endCall();
       }
-      call.endCall();
     } catch (err) {
       console.error("Error while leaving/ending call:", err);
     }
   };
 
-  const handleChangeLayout = () => {
+  /*const handleChangeLayout = () => {
     const layouts = ["grid", "speaker", "gallery"];
     const currentIndex = layouts.indexOf(layoutMode);
     const newLayout = layouts[(currentIndex + 1) % layouts.length];
     setLayoutMode(newLayout);
     onChangeLayout?.(newLayout);
-  };
+  };*/
 
   return (
     <>
       {/* Bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 h-20 bg-gray-900 bg-opacity-95 backdrop-blur-sm border-t border-gray-600 flex items-center justify-between px-6 z-50">
-        {/* Left: Layout toggle */}
-        <ControlButton icon={Grid3X3} isActive={layoutMode !== "grid"} onClick={handleChangeLayout} />
+        {/* Left: Layout toggle 
+        <ControlButton icon={Grid3X3} isActive={layoutMode !== "grid"} onClick={handleChangeLayout} />*/}
 
         {/* Middle: Custom controls */}
         <div className="flex items-center gap-3">

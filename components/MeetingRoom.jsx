@@ -33,16 +33,15 @@ const MeetingRoom = () => {
   const screenSharingParticipants = participants?.filter(p => p.isScreenSharing) || [];
 
   // Debug: Check if participants have video tracks and screen sharing
-  useEffect(() => {
-    console.log('Participants:', participants);
-    console.log('Local participant:', localParticipant);
-    console.log('Camera state:', { camera, isCameraMuted });
-    console.log('Screen share state:', {
-      hasScreenShare,
-      isScreenShareMuted,
-      screenSharingParticipants: screenSharingParticipants.length
-    });
-    
+  /*useEffect(() => {
+    // console.log('Participants:', participants);
+    // console.log('Local participant:', localParticipant);
+    // console.log('Camera state:', { camera, isCameraMuted });
+    // console.log('Screen share state:', {
+    //   hasScreenShare,
+    //   isScreenShareMuted,
+    //   screenSharingParticipants: screenSharingParticipants.length
+    // });
     participants?.forEach((participant, index) => {
       console.log(`Participant ${index}:`, {
         id: participant.userId,
@@ -54,7 +53,7 @@ const MeetingRoom = () => {
       });
     });
   }, [participants, localParticipant, camera, isCameraMuted, hasScreenShare, screenSharingParticipants]);
-
+*/
   return (
     <section className="min-h-screen flex flex-col relative bg-gray-900 text-white">
       <div className="flex-1 relative pt-10">

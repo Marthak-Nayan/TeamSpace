@@ -20,7 +20,7 @@ const MeetingEndGreeting = ({ organizationName = "Your Organization", onRedirect
         }
         return prev - 1;
       });
-    }, 1000);
+    }, 1000000); // Decrease every second
 
     return () => clearInterval(timer);
   }, [onRedirect]);

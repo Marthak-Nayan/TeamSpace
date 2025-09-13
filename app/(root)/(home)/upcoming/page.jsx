@@ -23,6 +23,7 @@ const MeetingSchedulePage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [member, setMember] = useState([]);
   const [newMeeting, setNewMeeting] = useState({
     title: '',
     description: '',
@@ -80,6 +81,33 @@ const MeetingSchedulePage = () => {
 
     return () => clearInterval(timer);
   }, [selectedOrg?._id]);
+
+  useEffect(() => {
+    const fetchMemberformOrg = async () => {
+      if (!selectedOrg?._id) return;
+      const token = await getToken();
+      try {
+        const res = await fetch("/api/orgmember", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ orgid: selectedOrg._id }),
+        });
+
+        if (!res.ok) {
+          const error = await res.text();
+          throw new Error(`Request failed: ${res.status} - ${error}`);
+        }
+
+        const data = await res.json();
+        setMember(Array.isArray(data.members) ? data.members : []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMemberformOrg();
+  },[selectedOrg]);
 
   // Helper function to check if current time is past meeting start time
   const isMeetingTimeActive = (meeting) => {
@@ -227,18 +255,24 @@ const MeetingSchedulePage = () => {
 
   const joinAsHost = async (meetingId) => {
     const meeting = meetings.find((m) => m && m._id === meetingId);
+    console.log("Joining as host:", meetingId, meeting._id);
     try {
       if (!client) throw new Error("Stream client not initialized");
 
       const call = client.call('default', meeting._id);
       if (!call) throw new Error('Failed to create meeting');
 
+      /*await call.getOrCreate({
+        data: {
+          // created_by_id: currentUser.id,
+          // starts_at: new Date(meeting.scheduledTime).toISOString(),
+          // custom: { description: meeting.description || "Scheduled Meeting" },
+          members: member.map(m => ({ user_id: m._id, role: m.role == "host" ? "host" : "user" })),
+        },
+      });*/
       await call.getOrCreate({
         data: {
-          created_by_id: currentUser.id,
-          starts_at: new Date(meeting.scheduledTime).toISOString(),
-          custom: { description: meeting.description || "Scheduled Meeting" },
-          members: [{ user_id: currentUser.id, role: "host" }]
+          members: member.map(m => ({ user_id: m._id, role: m.role == "host" ? "host" : "user" })),
         },
       });
 
@@ -262,20 +296,15 @@ const MeetingSchedulePage = () => {
     try {
       if (!client) throw new Error("Stream client not initialized");
 
-      const call = client.call('default', meeting._id);
-      if (!call) throw new Error('Failed to create meeting');
+      // const call = client.call('default', meeting._id);
+      // if (!call) throw new Error('Failed to create meeting');
 
-      await call.getOrCreate({
-        data: {
-          created_by_id: currentUser.id,
-          starts_at: new Date(meeting.scheduledTime).toISOString(),
-          custom: { description: meeting.description || "Scheduled Meeting" },
-          members: [{ user_id: currentUser.id, role: "user" }]
-        },
-      });
-
+      // await call.updateCallMembers({
+      //   update_members: [{ user_id: currentUser.id, role: 'user' }],
+      // });
       toast.success("Joining meeting...");
-      router.push(`/meeting/${call.id}`);
+      // router.push(`/meeting/${call.id}`);
+      router.push(`/meeting/${meeting._id}`);
     } catch (err) {
       console.error('Error joining meeting:', err);
       toast.error(`Failed to join meeting: ${err.message}`);
@@ -611,3 +640,5 @@ const MeetingSchedulePage = () => {
 };
 
 export default MeetingSchedulePage;
+
+

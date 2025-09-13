@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { role, useStreamVideoClient } from '@stream-io/video-react-sdk';
 
 export const useGetCalls = () => {
   const { user } = useUser();
